@@ -266,12 +266,6 @@ function renderDetail() {
       ["1.ª opção", course.latest?.firstChoiceApplicants, "gold", maxDemand(course)],
       ["Colocados", placed(course), "green", maxDemand(course)],
     ])}
-    ${barGroup("Condições de acesso", [
-      ["Nota mínima", course.applicationMinimum, "green", 200],
-      ["Provas mín.", course.examMinimum, "blue", 200],
-      ["Peso secund.", course.secondaryWeight, "gold", 100],
-      ["Peso provas", course.examWeight, "red", 100],
-    ])}
     ${gradeSparkline(course)}
     <p class="detail-meta">Fonte: <a href="${escapeAttr(course.source)}" target="_blank" rel="noreferrer">DGES Guia da Candidatura 2026</a></p>
   `;
