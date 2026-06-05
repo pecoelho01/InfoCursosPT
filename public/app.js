@@ -445,11 +445,7 @@ function historyTable(course) {
     allPhases.find((phase) => phase.year === year && phase.phase === "1ª Fase") || { year, phase: "1ª Fase" },
     allPhases.find((phase) => phase.year === year && phase.phase === "2ª Fase") || { year, phase: "2ª Fase" },
   ]);
-  const mobileColumns = [...columns].sort((a, b) => {
-    const yearDelta = Number(b.year) - Number(a.year);
-    if (yearDelta) return yearDelta;
-    return phaseOrder(a.phase) - phaseOrder(b.phase);
-  });
+  const mobileYears = [...years].sort((a, b) => Number(b) - Number(a));
 
   return `
     <section class="history-panel" aria-labelledby="history-title">
@@ -492,7 +488,7 @@ function historyTable(course) {
         </table>
       </div>
       <div class="history-mobile">
-        ${mobileColumns.map(historyPhaseCard).join("")}
+        ${mobileYears.map((year) => historyYearCard(year, columns)).join("")}
       </div>
     </section>
   `;
@@ -511,33 +507,40 @@ function historyRow(label, phases, field, variant = "") {
   `;
 }
 
-function historyPhaseCard(phase) {
+function historyYearCard(year, phases) {
+  const yearPhases = phases
+    .filter((phase) => phase.year === year)
+    .sort((a, b) => phaseOrder(a.phase) - phaseOrder(b.phase));
+
   return `
     <article class="history-card">
       <header>
-        <span>${escapeHtml(phase.year || "Ano n/d")}</span>
-        <strong>${escapeHtml(phase.phase || "Fase n/d")}</strong>
+        <span>${escapeHtml(year || "Ano n/d")}</span>
+        <strong>${yearPhases.length} fases</strong>
       </header>
-      <div class="history-card-main">
-        ${historyCardMetric("Vagas", phase.vacancies)}
-        ${historyCardMetric("Candidatos", phase.applicants)}
-        ${historyCardMetric("Colocados", phase.placed)}
-        ${historyCardMetric("Último", phase.lastPlacedGrade)}
-      </div>
-      <div class="history-card-extra">
-        ${historyCardRow("1.ª opção", phase.firstChoiceApplicants)}
-        ${historyCardRow("Média dos colocados", phase.averageAdmissionGrade)}
+      <div class="history-phases">
+        ${yearPhases.map(historyPhaseColumn).join("")}
       </div>
     </article>
   `;
 }
 
-function historyCardMetric(label, raw) {
-  return `<div><span>${escapeHtml(label)}</span><strong>${numberLabel(raw, "")}</strong></div>`;
+function historyPhaseColumn(phase) {
+  return `
+    <section class="history-phase">
+      <h4>${escapeHtml(phase.phase || "Fase n/d")}</h4>
+      ${historyCardRow("Vagas", phase.vacancies, "strong")}
+      ${historyCardRow("Candidatos", phase.applicants)}
+      ${historyCardRow("Colocados", phase.placed)}
+      ${historyCardRow("Último", phase.lastPlacedGrade, "strong")}
+      ${historyCardRow("1.ª opção", phase.firstChoiceApplicants)}
+      ${historyCardRow("Média", phase.averageAdmissionGrade)}
+    </section>
+  `;
 }
 
-function historyCardRow(label, raw) {
-  return `<p><span>${escapeHtml(label)}</span><strong>${numberLabel(raw, "")}</strong></p>`;
+function historyCardRow(label, raw, variant = "") {
+  return `<p class="${variant ? `is-${variant}` : ""}"><span>${escapeHtml(label)}</span><strong>${numberLabel(raw, "")}</strong></p>`;
 }
 
 function phaseOrder(phase) {
