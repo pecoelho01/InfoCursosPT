@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InfoCursos PT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <img src="assets/students-dashboard.png" alt="" class="hero-image" />
+        <div class="hero-overlay"></div>
+        <nav class="topbar" aria-label="Navegação principal">
+          <a class="brand" href="#">
+            <span class="brand-mark">IC</span>
+            <span>InfoCursos PT</span>
+          </a>
+          <div class="source-chip">Dados DGES 2026</div>
+        </nav>
+        <section class="hero-content" aria-labelledby="page-title">
+          <p class="eyebrow">Candidaturas DGES 2026</p>
+          <h1 id="page-title">Cursos, vagas e notas num só lugar.</h1>
+          <p class="hero-copy">
+            Pesquisa cursos superiores por instituição, procura e nota do último colocado.
+          </p>
+          <form class="search-panel" role="search">
+            <label class="search-box" for="query">
+              <span>Pesquisar</span>
+              <input id="query" type="search" placeholder="Curso, instituição, unidade ou código" autocomplete="off" />
+            </label>
+            <label>
+              <span>Ordenar</span>
+              <select id="sort">
+                <option value="demand">Maior procura/vaga</option>
+                <option value="lastGrade">Nota do último colocado</option>
+                <option value="applicants">Mais candidatos</option>
+                <option value="vacancies">Mais vagas 2026</option>
+                <option value="occupancy">Maior ocupação</option>
+                <option value="name">Nome do curso</option>
+              </select>
+            </label>
+          </form>
+        </section>
+      </header>
+
+      <main class="workspace">
+        <aside class="filters" aria-label="Filtros">
+          <div class="filter-head">
+            <div>
+              <p class="section-kicker">Filtros</p>
+              <h2>Refinar</h2>
+            </div>
+            <button id="resetFilters" type="button">Limpar</button>
+          </div>
+          <label>
+            <span>Concurso</span>
+            <select id="natureFilter"></select>
+          </label>
+          <label>
+            <span>Tipo de ensino</span>
+            <select id="systemFilter"></select>
+          </label>
+          <label>
+            <span>Grau</span>
+            <select id="degreeFilter"></select>
+          </label>
+          <label>
+            <span>Instituição</span>
+            <select id="institutionFilter"></select>
+          </label>
+          <label class="area-filter">
+            <span>Área</span>
+            <select id="areaFilter"></select>
+          </label>
+          <div class="metric-filter">
+            <label for="maxUnemployment">
+              <span>Nota mínima do último colocado</span>
+              <strong id="maxUnemploymentValue">0</strong>
+            </label>
+            <input id="maxUnemployment" type="range" min="0" max="200" value="0" />
+          </div>
+          <label class="toggle">
+            <input id="onlyWithEntry" type="checkbox" />
+            <span>Mostrar só cursos com último colocado</span>
+          </label>
+        </aside>
+
+        <section class="results-area" aria-live="polite">
+          <div class="stats-grid">
+            <article>
+              <span id="statCourses">0</span>
+              <p>Cursos encontrados</p>
+            </article>
+            <article>
+              <span id="statInstitutions">0</span>
+              <p>Instituições</p>
+            </article>
+            <article>
+              <span id="statAvgCompletion">-</span>
+              <p>Último colocado médio</p>
+            </article>
+            <article>
+              <span id="statAvgUnemployment">-</span>
+              <p>Candidatos por vaga</p>
+            </article>
+          </div>
+
+          <div class="content-grid">
+            <section class="results-list" aria-labelledby="results-title">
+              <div class="list-head">
+                <div>
+              <p class="section-kicker">Resultados</p>
+              <h2 id="results-title">Cursos</h2>
+                </div>
+                <span id="visibleRange"></span>
+              </div>
+              <div id="cards" class="cards"></div>
+              <button id="loadMore" class="load-more" type="button">Ver mais resultados</button>
+            </section>
+          </div>
+        </section>
+
+        <section class="course-page" id="coursePage" aria-labelledby="details-title" hidden>
+          <div class="course-page-top">
+            <button id="backToResults" type="button">Voltar aos cursos</button>
+            <button id="compareSelected" type="button" disabled>Comparar</button>
+          </div>
+          <div class="details">
+            <div class="details-top">
+              <div>
+                <p class="section-kicker">Detalhe</p>
+                <h2 id="details-title">Curso selecionado</h2>
+              </div>
+            </div>
+            <div id="detailContent" class="detail-content empty">
+              <p>Escolhe um curso para ver indicadores e condições de acesso.</p>
+            </div>
+          </div>
+          <section class="compare-box" aria-labelledby="compare-title">
+            <div class="compare-head">
+              <h3 id="compare-title">Comparação</h3>
+              <button id="clearCompare" type="button">Limpar</button>
+            </div>
+            <div id="compareList" class="compare-list"></div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
