@@ -261,12 +261,7 @@ function renderDetail() {
       ${metric("Último colocado", numberLabel(lastPlacedGrade(course), ""))}
     </div>
     ${accessDetails(course)}
-    ${barGroup("Candidatos e colocados", [
-      ["Candidatos", applicants(course), "blue", maxDemand(course)],
-      ["1.ª opção", course.latest?.firstChoiceApplicants, "gold", maxDemand(course)],
-      ["Colocados", placed(course), "green", maxDemand(course)],
-    ])}
-    ${gradeSparkline(course)}
+    ${historyTable(course)}
     <p class="detail-meta">Fonte: <a href="${escapeAttr(course.source)}" target="_blank" rel="noreferrer">DGES Guia da Candidatura 2026</a></p>
   `;
 }
@@ -441,39 +436,70 @@ function formulaLabel(course) {
   return course.accessFormula?.raw || "Fórmula não disponível na DGES.";
 }
 
-function barGroup(title, rows) {
+function historyTable(course) {
+  const allPhases = course.statistics?.phases || [];
+  if (!allPhases.length) return "";
+
+  const years = [...new Set(allPhases.map((phase) => phase.year).filter(Boolean))];
+  const columns = years.flatMap((year) => [
+    allPhases.find((phase) => phase.year === year && phase.phase === "1ª Fase") || { year, phase: "1ª Fase" },
+    allPhases.find((phase) => phase.year === year && phase.phase === "2ª Fase") || { year, phase: "2ª Fase" },
+  ]);
+
   return `
-    <h3 class="detail-section">${title}</h3>
-    <div class="bar-group">
-      ${rows
-        .map(([label, raw, color, max]) => {
-          const width = Math.max(0, Math.min(((Number(raw) || 0) / (Number(max) || 100)) * 100, 100));
-          return `
-            <div class="bar-row">
-              <span>${label}</span>
-              <div class="bar-track"><div class="bar-fill ${color}" style="width:${width}%"></div></div>
-              <strong>${numberLabel(raw, "")}</strong>
-            </div>`;
-        })
-        .join("")}
-    </div>
+    <section class="history-panel" aria-labelledby="history-title">
+      <div class="history-head">
+        <div>
+          <h3 id="history-title" class="detail-section">Histórico DGES</h3>
+          <p>Evolução por ano e fase, com candidatos, colocados e médias.</p>
+        </div>
+      </div>
+      <div class="history-table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th></th>
+              ${years.map((year) => `<th colspan="2">${escapeHtml(year)}</th>`).join("")}
+            </tr>
+            <tr>
+              <th></th>
+              ${columns.map((phase) => `<th>${escapeHtml(phase.phase)}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${historyRow("Vagas", columns, "vacancies", "strong")}
+            ${historyGroup("Candidatos")}
+            ${historyRow("Candidatos", columns, "applicants")}
+            ${historyRow("do Sexo Feminino", columns, "applicantsFemale", "sub")}
+            ${historyRow("do Sexo Masculino", columns, "applicantsMale", "sub")}
+            ${historyRow("em 1.ª Opção", columns, "firstChoiceApplicants", "sub")}
+            ${historyGroup("Colocados")}
+            ${historyRow("Colocados", columns, "placed")}
+            ${historyRow("do Sexo Feminino", columns, "placedFemale", "sub")}
+            ${historyRow("do Sexo Masculino", columns, "placedMale", "sub")}
+            ${historyRow("em 1.ª Opção", columns, "firstChoicePlaced", "sub")}
+            ${historyGroup("Médias dos Colocados")}
+            ${historyRow("Nota de Candidatura", columns, "averageAdmissionGrade")}
+            ${historyRow("Provas de Ingresso", columns, "averageExamGrade")}
+            ${historyRow("Média do Secundário", columns, "averageSecondaryGrade")}
+            ${historyRow("Último colocado", columns, "lastPlacedGrade", "strong")}
+          </tbody>
+        </table>
+      </div>
+    </section>
   `;
 }
 
-function gradeSparkline(course) {
-  const phases = (course.statistics?.phases || []).filter((phase) => phase.phase === "1ª Fase");
-  const values = phases.map((phase) => Number(phase.lastPlacedGrade) || 0);
-  const max = Math.max(...values, 200);
+function historyGroup(label) {
+  return `<tr class="history-group"><th colspan="99">${escapeHtml(label)}</th></tr>`;
+}
+
+function historyRow(label, phases, field, variant = "") {
   return `
-    <h3 class="detail-section">Último colocado na 1.ª fase</h3>
-    <div class="sparkline">
-      ${phases
-        .map((phase, index) => {
-          const height = Math.max(5, (values[index] / max) * 100);
-          return `<div class="sparkbar"><span style="height:${height}%"></span>${phase.year}<br>${numberLabel(phase.lastPlacedGrade, "")}</div>`;
-        })
-        .join("")}
-    </div>
+    <tr class="${variant ? `is-${variant}` : ""}">
+      <th>${escapeHtml(label)}</th>
+      ${phases.map((phase) => `<td>${numberLabel(phase[field], "")}</td>`).join("")}
+    </tr>
   `;
 }
 
@@ -519,10 +545,6 @@ function vacancies(course) {
 
 function lastPlacedGrade(course) {
   return course?.latest?.lastPlacedGrade ?? null;
-}
-
-function maxDemand(course) {
-  return Math.max(applicants(course) || 0, placed(course) || 0, course.latest?.firstChoiceApplicants || 0, 1);
 }
 
 function areaLabel(area) {
