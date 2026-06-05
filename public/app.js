@@ -8,6 +8,7 @@ const state = {
 
 const els = {
   searchPanel: document.querySelector(".search-panel"),
+  themeToggle: document.querySelector("#themeToggle"),
   query: document.querySelector("#query"),
   sort: document.querySelector("#sort"),
   contest: document.querySelector("#natureFilter"),
@@ -38,6 +39,7 @@ const els = {
 };
 
 const fmt = new Intl.NumberFormat("pt-PT", { maximumFractionDigits: 1 });
+const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
 
 fetch("data/dges-courses.json")
   .then((response) => response.json())
@@ -54,8 +56,21 @@ fetch("data/dges-courses.json")
   });
 
 function bindEvents() {
+  syncThemeControls(currentTheme());
+
   els.searchPanel.addEventListener("submit", (event) => {
     event.preventDefault();
+  });
+
+  els.themeToggle.addEventListener("click", () => {
+    const nextTheme = currentTheme() === "dark" ? "light" : "dark";
+    setTheme(nextTheme, { persist: true });
+  });
+
+  themeMedia.addEventListener("change", (event) => {
+    if (!storedThemePreference()) {
+      setTheme(event.matches ? "dark" : "light");
+    }
   });
 
   [
@@ -106,6 +121,41 @@ function bindEvents() {
   });
 
   window.addEventListener("hashchange", openCourseFromHash);
+}
+
+function currentTheme() {
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+}
+
+function setTheme(theme, options = {}) {
+  document.documentElement.dataset.theme = theme;
+  if (options.persist) storeThemePreference(theme);
+  syncThemeControls(theme);
+}
+
+function storedThemePreference() {
+  try {
+    return localStorage.getItem("theme");
+  } catch {
+    return null;
+  }
+}
+
+function storeThemePreference(theme) {
+  try {
+    localStorage.setItem("theme", theme);
+  } catch {
+    // Theme still changes for this session when storage is unavailable.
+  }
+}
+
+function syncThemeControls(theme) {
+  const isDark = theme === "dark";
+  els.themeToggle.setAttribute("aria-label", isDark ? "Ativar modo claro" : "Ativar modo escuro");
+  els.themeToggle.setAttribute("aria-pressed", String(isDark));
+  els.themeToggle.querySelector(".theme-toggle-text").textContent = isDark ? "Claro" : "Escuro";
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor) themeColor.setAttribute("content", isDark ? "#0d1113" : "#ffffff");
 }
 
 function hydrateFilters() {
