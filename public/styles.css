@@ -899,39 +899,27 @@ input[type="range"] {
   font-weight: 800;
 }
 
-.history-card-section {
-  padding: 10px 12px 12px;
-  border-bottom: 1px solid var(--line);
+.history-card-extra {
+  padding: 8px 12px;
+  background: var(--soft);
 }
 
-.history-card-section:last-child {
-  border-bottom: 0;
-}
-
-.history-card-section h4 {
-  margin: 0 0 8px;
-  color: var(--ink);
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.history-card-section p {
+.history-card-extra p {
   display: flex;
   justify-content: space-between;
   gap: 12px;
   margin: 0;
-  padding: 5px 0;
+  padding: 6px 0;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: 0.78rem;
 }
 
-.history-card-section p:first-of-type {
+.history-card-extra p:first-child {
   border-top: 0;
 }
 
-.history-card-section strong {
+.history-card-extra strong {
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }

@@ -524,23 +524,9 @@ function historyPhaseCard(phase) {
         ${historyCardMetric("Colocados", phase.placed)}
         ${historyCardMetric("Último", phase.lastPlacedGrade)}
       </div>
-      <div class="history-card-section">
-        <h4>Candidatos</h4>
-        ${historyCardRow("Feminino", phase.applicantsFemale)}
-        ${historyCardRow("Masculino", phase.applicantsMale)}
+      <div class="history-card-extra">
         ${historyCardRow("1.ª opção", phase.firstChoiceApplicants)}
-      </div>
-      <div class="history-card-section">
-        <h4>Colocados</h4>
-        ${historyCardRow("Feminino", phase.placedFemale)}
-        ${historyCardRow("Masculino", phase.placedMale)}
-        ${historyCardRow("1.ª opção", phase.firstChoicePlaced)}
-      </div>
-      <div class="history-card-section">
-        <h4>Médias</h4>
-        ${historyCardRow("Candidatura", phase.averageAdmissionGrade)}
-        ${historyCardRow("Provas", phase.averageExamGrade)}
-        ${historyCardRow("Secundário", phase.averageSecondaryGrade)}
+        ${historyCardRow("Média dos colocados", phase.averageAdmissionGrade)}
       </div>
     </article>
   `;
