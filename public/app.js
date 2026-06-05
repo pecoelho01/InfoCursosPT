@@ -253,7 +253,7 @@ function renderDetail() {
   els.detailContent.className = "detail-content";
   els.detailContent.innerHTML = `
     <h3 class="detail-title">${escapeHtml(course.name)}</h3>
-    <p class="detail-meta">${escapeHtml(course.institution)}<br>Código ${escapeHtml(course.id)} · ${escapeHtml(course.area || "Área n/d")}</p>
+    <p class="detail-meta">${escapeHtml(course.institution)}</p>
     <div class="detail-grid">
       ${metric("Vagas", numberLabel(vacancies(course), ""))}
       ${metric("Candidatos 2025 F1", numberLabel(applicants(course), ""))}
