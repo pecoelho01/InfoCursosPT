@@ -1,0 +1,45 @@
+name: Update DGES data
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-dges-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Regenerate course data
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Regenerate DGES data
+        run: |
+          rm -rf public/data/.dges-cache
+          npm run data
+
+      - name: Commit updated data
+        run: |
+          if git diff --quiet -- public/data/dges-courses.json; then
+            echo "DGES data is already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/dges-courses.json
+          git commit -m "Update DGES course data"
+          git push

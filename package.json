@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "data": "/Users/pecoelhoo/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/build_dges_data.py",
+    "data": "sh scripts/update_dges_data.sh",
     "start": "python3 -m http.server 5173 --directory public"
   }
 }

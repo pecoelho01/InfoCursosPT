@@ -24,6 +24,10 @@ Para regenerar o JSON consumido pelo site:
 npm run data
 ```
 
+O repositório também inclui uma GitHub Action que regenera os dados todos os dias
+às 06:00 UTC, limpando primeiro a cache local da DGES. Se o JSON mudar, a action
+cria automaticamente um commit com os dados atualizados.
+
 ## O que a interface inclui
 
 - Pesquisa por curso, instituição ou código.
