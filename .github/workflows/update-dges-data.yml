@@ -2,7 +2,10 @@ name: Update DGES data
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    # Daily during the DGES application season.
+    - cron: "0 6 * 6-9 *"
+    # Weekly outside the application season.
+    - cron: "0 6 * 1-5,10-12 1"
   workflow_dispatch:
 
 permissions:

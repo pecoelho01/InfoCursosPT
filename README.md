@@ -24,9 +24,10 @@ Para regenerar o JSON consumido pelo site:
 npm run data
 ```
 
-O repositório também inclui uma GitHub Action que regenera os dados todos os dias
-às 06:00 UTC, limpando primeiro a cache local da DGES. Se o JSON mudar, a action
-cria automaticamente um commit com os dados atualizados.
+O repositório também inclui uma GitHub Action que regenera os dados às 06:00 UTC:
+diariamente de junho a setembro e semanalmente, à segunda-feira, no resto do ano.
+A action limpa primeiro a cache local da DGES. Se o JSON mudar, cria automaticamente
+um commit com os dados atualizados.
 
 ## O que a interface inclui
 
