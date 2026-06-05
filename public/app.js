@@ -445,6 +445,11 @@ function historyTable(course) {
     allPhases.find((phase) => phase.year === year && phase.phase === "1ª Fase") || { year, phase: "1ª Fase" },
     allPhases.find((phase) => phase.year === year && phase.phase === "2ª Fase") || { year, phase: "2ª Fase" },
   ]);
+  const mobileColumns = [...columns].sort((a, b) => {
+    const yearDelta = Number(b.year) - Number(a.year);
+    if (yearDelta) return yearDelta;
+    return phaseOrder(a.phase) - phaseOrder(b.phase);
+  });
 
   return `
     <section class="history-panel" aria-labelledby="history-title">
@@ -487,7 +492,7 @@ function historyTable(course) {
         </table>
       </div>
       <div class="history-mobile">
-        ${columns.map(historyPhaseCard).join("")}
+        ${mobileColumns.map(historyPhaseCard).join("")}
       </div>
     </section>
   `;
@@ -547,6 +552,10 @@ function historyCardMetric(label, raw) {
 
 function historyCardRow(label, raw) {
   return `<p><span>${escapeHtml(label)}</span><strong>${numberLabel(raw, "")}</strong></p>`;
+}
+
+function phaseOrder(phase) {
+  return phase === "1ª Fase" ? 1 : phase === "2ª Fase" ? 2 : 99;
 }
 
 function renderCompare() {
