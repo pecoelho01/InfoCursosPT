@@ -831,6 +831,111 @@ input[type="range"] {
   font-weight: 800;
 }
 
+.history-mobile {
+  display: none;
+}
+
+.history-card {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.history-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  min-height: 42px;
+  border-bottom: 1px solid var(--line);
+  background: var(--soft);
+  padding: 0 12px;
+}
+
+.history-card header span,
+.history-card header strong {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.history-card header span {
+  color: var(--blue);
+}
+
+.history-card-main {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+
+.history-card-main div {
+  min-height: 64px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+}
+
+.history-card-main div:nth-child(2n) {
+  border-right: 0;
+}
+
+.history-card-main div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.history-card-main span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.history-card-main strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: 1.18rem;
+  font-weight: 800;
+}
+
+.history-card-section {
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.history-card-section:last-child {
+  border-bottom: 0;
+}
+
+.history-card-section h4 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.history-card-section p {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.history-card-section p:first-of-type {
+  border-top: 0;
+}
+
+.history-card-section strong {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
 .compare-box {
   border: 1px solid var(--line);
   margin-top: 0;
@@ -983,12 +1088,12 @@ input[type="range"] {
     padding-left: 0;
   }
 
-  .history-table {
-    min-width: 680px;
-    font-size: 0.72rem;
+  .history-table-wrap {
+    display: none;
   }
 
-  .history-table tbody th {
-    width: 170px;
+  .history-mobile {
+    display: grid;
+    gap: 12px;
   }
 }

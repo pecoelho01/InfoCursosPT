@@ -486,6 +486,9 @@ function historyTable(course) {
           </tbody>
         </table>
       </div>
+      <div class="history-mobile">
+        ${columns.map(historyPhaseCard).join("")}
+      </div>
     </section>
   `;
 }
@@ -501,6 +504,49 @@ function historyRow(label, phases, field, variant = "") {
       ${phases.map((phase) => `<td>${numberLabel(phase[field], "")}</td>`).join("")}
     </tr>
   `;
+}
+
+function historyPhaseCard(phase) {
+  return `
+    <article class="history-card">
+      <header>
+        <span>${escapeHtml(phase.year || "Ano n/d")}</span>
+        <strong>${escapeHtml(phase.phase || "Fase n/d")}</strong>
+      </header>
+      <div class="history-card-main">
+        ${historyCardMetric("Vagas", phase.vacancies)}
+        ${historyCardMetric("Candidatos", phase.applicants)}
+        ${historyCardMetric("Colocados", phase.placed)}
+        ${historyCardMetric("Último", phase.lastPlacedGrade)}
+      </div>
+      <div class="history-card-section">
+        <h4>Candidatos</h4>
+        ${historyCardRow("Feminino", phase.applicantsFemale)}
+        ${historyCardRow("Masculino", phase.applicantsMale)}
+        ${historyCardRow("1.ª opção", phase.firstChoiceApplicants)}
+      </div>
+      <div class="history-card-section">
+        <h4>Colocados</h4>
+        ${historyCardRow("Feminino", phase.placedFemale)}
+        ${historyCardRow("Masculino", phase.placedMale)}
+        ${historyCardRow("1.ª opção", phase.firstChoicePlaced)}
+      </div>
+      <div class="history-card-section">
+        <h4>Médias</h4>
+        ${historyCardRow("Candidatura", phase.averageAdmissionGrade)}
+        ${historyCardRow("Provas", phase.averageExamGrade)}
+        ${historyCardRow("Secundário", phase.averageSecondaryGrade)}
+      </div>
+    </article>
+  `;
+}
+
+function historyCardMetric(label, raw) {
+  return `<div><span>${escapeHtml(label)}</span><strong>${numberLabel(raw, "")}</strong></div>`;
+}
+
+function historyCardRow(label, raw) {
+  return `<p><span>${escapeHtml(label)}</span><strong>${numberLabel(raw, "")}</strong></p>`;
 }
 
 function renderCompare() {
