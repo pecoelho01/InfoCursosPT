@@ -11,7 +11,6 @@ const els = {
   themeToggle: document.querySelector("#themeToggle"),
   query: document.querySelector("#query"),
   sort: document.querySelector("#sort"),
-  contest: document.querySelector("#natureFilter"),
   teachingType: document.querySelector("#systemFilter"),
   degree: document.querySelector("#degreeFilter"),
   institution: document.querySelector("#institutionFilter"),
@@ -76,7 +75,6 @@ function bindEvents() {
   [
     els.query,
     els.sort,
-    els.contest,
     els.teachingType,
     els.degree,
     els.institution,
@@ -92,7 +90,6 @@ function bindEvents() {
 
   els.resetFilters.addEventListener("click", () => {
     els.query.value = "";
-    els.contest.value = "";
     els.teachingType.value = "";
     els.degree.value = "";
     els.institution.value = "";
@@ -159,7 +156,6 @@ function syncThemeControls(theme) {
 }
 
 function hydrateFilters() {
-  fillSelect(els.contest, "Todos", unique("contest"));
   fillSelect(els.teachingType, "Todos", unique("teachingType"));
   fillSelect(els.degree, "Todos", unique("degree"));
   fillSelect(els.institution, "Todas", unique("institution"));
@@ -183,7 +179,6 @@ function applyFilters() {
 
   state.filtered = state.courses.filter((course) => {
     if (query && !normalize(course.search).includes(query)) return false;
-    if (els.contest.value && course.contest !== els.contest.value) return false;
     if (els.teachingType.value && course.teachingType !== els.teachingType.value) return false;
     if (els.degree.value && course.degree !== els.degree.value) return false;
     if (els.institution.value && course.institution !== els.institution.value) return false;
@@ -211,7 +206,6 @@ function sortCourses() {
     lastGrade: (a, b) => value(lastPlacedGrade(b)) - value(lastPlacedGrade(a)),
     applicants: (a, b) => value(applicants(b)) - value(applicants(a)),
     vacancies: (a, b) => value(vacancies(b)) - value(vacancies(a)),
-    occupancy: (a, b) => value(b.occupancyRate) - value(a.occupancyRate),
     name: (a, b) => (a.name || "").localeCompare(b.name || "", "pt"),
   };
   state.filtered.sort(sorters[els.sort.value] || sorters.demand);

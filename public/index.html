@@ -63,7 +63,6 @@
                 <option value="lastGrade">Nota do último colocado</option>
                 <option value="applicants">Mais candidatos</option>
                 <option value="vacancies">Mais vagas 2026</option>
-                <option value="occupancy">Maior ocupação</option>
                 <option value="name">Nome do curso</option>
               </select>
             </label>
@@ -81,8 +80,12 @@
             <button id="resetFilters" type="button">Limpar</button>
           </div>
           <label>
-            <span>Concurso</span>
-            <select id="natureFilter"></select>
+            <span>Instituição</span>
+            <select id="institutionFilter"></select>
+          </label>
+          <label class="area-filter">
+            <span>Área</span>
+            <select id="areaFilter"></select>
           </label>
           <label>
             <span>Tipo de ensino</span>
@@ -91,14 +94,6 @@
           <label>
             <span>Grau</span>
             <select id="degreeFilter"></select>
-          </label>
-          <label>
-            <span>Instituição</span>
-            <select id="institutionFilter"></select>
-          </label>
-          <label class="area-filter">
-            <span>Área</span>
-            <select id="areaFilter"></select>
           </label>
           <div class="metric-filter">
             <label for="maxUnemployment">
