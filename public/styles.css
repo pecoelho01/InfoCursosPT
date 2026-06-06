@@ -327,6 +327,65 @@ button:focus-visible {
   grid-column: span 2;
 }
 
+.filter-section {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.filter-section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.filter-section-head h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.exam-filter-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 12px;
+}
+
+.selected-exams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 40px;
+  align-items: center;
+}
+
+.selected-exams p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.exam-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  border-color: var(--line);
+  background: var(--soft);
+  padding: 0 10px;
+  text-transform: none;
+  font-size: 0.78rem;
+}
+
+.exam-chip strong {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .filter-head h2,
 .list-head h2,
 .details-top h2 {
@@ -1079,7 +1138,8 @@ input[type="range"] {
   .stats-grid,
   .micro-metrics,
   .detail-grid,
-  .access-panel {
+  .access-panel,
+  .exam-filter-controls {
     grid-template-columns: 1fr;
   }
 

@@ -3,6 +3,7 @@ const state = {
   filtered: [],
   selectedId: null,
   compare: [],
+  selectedExams: [],
   visible: 18,
 };
 
@@ -15,6 +16,10 @@ const els = {
   degree: document.querySelector("#degreeFilter"),
   institution: document.querySelector("#institutionFilter"),
   area: document.querySelector("#areaFilter"),
+  exam: document.querySelector("#examFilter"),
+  examMode: document.querySelector("#examFilterMode"),
+  selectedExamFilters: document.querySelector("#selectedExamFilters"),
+  clearExamFilters: document.querySelector("#clearExamFilters"),
   minGrade: document.querySelector("#maxUnemployment"),
   minGradeValue: document.querySelector("#maxUnemploymentValue"),
   onlyWithGrade: document.querySelector("#onlyWithEntry"),
@@ -79,9 +84,20 @@ function bindEvents() {
     els.degree,
     els.institution,
     els.area,
+    els.examMode,
     els.minGrade,
     els.onlyWithGrade,
   ].forEach((el) => el.addEventListener("input", applyFilters));
+
+  els.exam.addEventListener("input", () => {
+    if (!els.exam.value) return;
+    if (!state.selectedExams.includes(els.exam.value)) {
+      state.selectedExams = [...state.selectedExams, els.exam.value];
+      renderSelectedExams();
+      applyFilters();
+    }
+    els.exam.value = "";
+  });
 
   els.loadMore.addEventListener("click", () => {
     state.visible += 18;
@@ -94,9 +110,19 @@ function bindEvents() {
     els.degree.value = "";
     els.institution.value = "";
     els.area.value = "";
+    els.exam.value = "";
+    els.examMode.value = "any";
+    state.selectedExams = [];
     els.minGrade.value = "0";
     els.onlyWithGrade.checked = false;
     els.sort.value = "demand";
+    renderSelectedExams();
+    applyFilters();
+  });
+
+  els.clearExamFilters.addEventListener("click", () => {
+    state.selectedExams = [];
+    renderSelectedExams();
     applyFilters();
   });
 
@@ -160,6 +186,14 @@ function hydrateFilters() {
   fillSelect(els.degree, "Todos", unique("degree"));
   fillSelect(els.institution, "Todas", unique("institution"));
   fillSelect(els.area, "Todas", unique("area"));
+  const exams = uniqueExams();
+  fillSelect(
+    els.exam,
+    "Escolher prova",
+    exams.map((exam) => exam.value),
+    exams.map((exam) => exam.label),
+  );
+  renderSelectedExams();
 }
 
 function unique(field) {
@@ -168,8 +202,29 @@ function unique(field) {
   );
 }
 
-function fillSelect(select, label, values) {
-  select.innerHTML = [`<option value="">${label}</option>`, ...values.map((value) => `<option>${escapeHtml(value)}</option>`)].join("");
+function uniqueExams() {
+  const exams = new Map();
+  state.courses.forEach((course) => {
+    (course.admissionExams?.exams || []).forEach((exam) => {
+      if (!exam.code || exams.has(exam.code)) return;
+      exams.set(exam.code, {
+        value: exam.code,
+        label: `${exam.code} ${cleanExamName(exam.name)}`,
+      });
+    });
+  });
+  return [...exams.values()].sort((a, b) => a.label.localeCompare(b.label, "pt"));
+}
+
+function cleanExamName(name) {
+  return String(name || "").replace(/\s+\([^)]+\)$/g, "").trim();
+}
+
+function fillSelect(select, label, values, labels = values) {
+  select.innerHTML = [
+    `<option value="">${label}</option>`,
+    ...values.map((value, index) => `<option value="${escapeAttr(value)}">${escapeHtml(labels[index])}</option>`),
+  ].join("");
 }
 
 function applyFilters() {
@@ -183,6 +238,7 @@ function applyFilters() {
     if (els.degree.value && course.degree !== els.degree.value) return false;
     if (els.institution.value && course.institution !== els.institution.value) return false;
     if (els.area.value && course.area !== els.area.value) return false;
+    if (state.selectedExams.length && !courseMatchesSelectedExams(course)) return false;
     if (els.onlyWithGrade.checked && !lastPlacedGrade(course)) return false;
     const grade = lastPlacedGrade(course);
     if (minGrade > 0 && (typeof grade !== "number" || grade < minGrade)) return false;
@@ -198,6 +254,45 @@ function applyFilters() {
     state.selectedId = null;
     renderDetail();
   }
+}
+
+function courseMatchesSelectedExams(course) {
+  const courseExamCodes = new Set((course.admissionExams?.exams || []).map((exam) => exam.code).filter(Boolean));
+  if (!courseExamCodes.size) return false;
+  if (els.examMode.value === "all") {
+    return state.selectedExams.every((code) => courseExamCodes.has(code));
+  }
+  return state.selectedExams.some((code) => courseExamCodes.has(code));
+}
+
+function renderSelectedExams() {
+  const exams = uniqueExams();
+  const labelsByCode = new Map(exams.map((exam) => [exam.value, exam.label]));
+  els.clearExamFilters.disabled = !state.selectedExams.length;
+
+  if (!state.selectedExams.length) {
+    els.selectedExamFilters.innerHTML = `<p>Nenhuma prova selecionada.</p>`;
+    return;
+  }
+
+  els.selectedExamFilters.innerHTML = state.selectedExams
+    .map(
+      (code) => `
+        <button class="exam-chip" type="button" data-exam="${escapeAttr(code)}">
+          <span>${escapeHtml(labelsByCode.get(code) || code)}</span>
+          <strong aria-hidden="true">×</strong>
+        </button>
+      `,
+    )
+    .join("");
+
+  els.selectedExamFilters.querySelectorAll(".exam-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      state.selectedExams = state.selectedExams.filter((code) => code !== chip.dataset.exam);
+      renderSelectedExams();
+      applyFilters();
+    });
+  });
 }
 
 function sortCourses() {

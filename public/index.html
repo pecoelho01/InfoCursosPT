@@ -106,6 +106,29 @@
             <input id="onlyWithEntry" type="checkbox" />
             <span>Mostrar só cursos com último colocado</span>
           </label>
+          <section class="filter-section exam-filter" aria-labelledby="exam-filter-title">
+            <div class="filter-section-head">
+              <div>
+                <p class="section-kicker">Acesso</p>
+                <h3 id="exam-filter-title">Provas de ingresso</h3>
+              </div>
+              <button id="clearExamFilters" type="button" disabled>Limpar provas</button>
+            </div>
+            <div class="exam-filter-controls">
+              <label>
+                <span>Adicionar prova</span>
+                <select id="examFilter"></select>
+              </label>
+              <label>
+                <span>Modo</span>
+                <select id="examFilterMode">
+                  <option value="any">Aceita qualquer selecionada</option>
+                  <option value="all">Inclui todas as selecionadas</option>
+                </select>
+              </label>
+            </div>
+            <div id="selectedExamFilters" class="selected-exams" aria-live="polite"></div>
+          </section>
         </aside>
 
         <section class="results-area" aria-live="polite">
