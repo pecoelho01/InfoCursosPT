@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -18,6 +19,8 @@ CACHE = ROOT / "public" / "data" / ".dges-cache"
 BASE_URL = "https://www.dges.gov.pt/guias/"
 LETTERS = "ABCDEFGHIJLMNOPQRSTVZ"
 USER_AGENT = "Mozilla/5.0 InfoCursosPT/0.1"
+MAX_WORKERS = max(1, int(os.environ.get("DGES_WORKERS", "4")))
+FETCH_RETRIES = max(1, int(os.environ.get("DGES_FETCH_RETRIES", "4")))
 
 
 def fetch(url: str, cache_name: str) -> str:
@@ -26,12 +29,17 @@ def fetch(url: str, cache_name: str) -> str:
     if target.exists():
         return target.read_text(encoding="utf-8")
 
-    request = Request(url, headers={"User-Agent": USER_AGENT})
-    try:
-        with urlopen(request, timeout=30) as response:
-            raw = response.read()
-    except (HTTPError, URLError) as error:
-        raise RuntimeError(f"Could not fetch {url}: {error}") from error
+    for attempt in range(1, FETCH_RETRIES + 1):
+        request = Request(url, headers={"User-Agent": USER_AGENT})
+        try:
+            with urlopen(request, timeout=30) as response:
+                raw = response.read()
+            break
+        except (HTTPError, URLError, TimeoutError, OSError) as error:
+            if attempt == FETCH_RETRIES:
+                raise RuntimeError(f"Could not fetch {url}: {error}") from error
+            time.sleep(1.5 * attempt)
+
     text = raw.decode("iso-8859-1", errors="replace")
     target.write_text(text, encoding="utf-8")
     time.sleep(0.03)
@@ -276,15 +284,20 @@ def main():
     print(f"Found {len(items)} institution/course pairs", flush=True)
 
     courses = []
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    errors = []
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = [executor.submit(parse_detail, item) for item in items]
         for index, future in enumerate(as_completed(futures), start=1):
             try:
                 courses.append(future.result())
             except Exception as error:
-                print(f"Skipped one detail page: {error}", flush=True)
+                errors.append(str(error))
+                print(f"Failed to parse one detail page: {error}", flush=True)
             if index % 100 == 0:
                 print(f"Parsed {index}/{len(items)}", flush=True)
+
+    if errors:
+        raise RuntimeError(f"Failed to parse {len(errors)} detail pages; refusing to write partial DGES data.")
 
     courses.sort(key=lambda item: (item.get("name") or "", item.get("institution") or ""))
     meta = {
