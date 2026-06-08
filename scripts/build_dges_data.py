@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import socket
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -21,6 +22,18 @@ LETTERS = "ABCDEFGHIJLMNOPQRSTVZ"
 USER_AGENT = "Mozilla/5.0 InfoCursosPT/0.1"
 MAX_WORKERS = max(1, int(os.environ.get("DGES_WORKERS", "4")))
 FETCH_RETRIES = max(1, int(os.environ.get("DGES_FETCH_RETRIES", "4")))
+FORCE_IPV4 = os.environ.get("DGES_FORCE_IPV4", "1") != "0"
+
+
+if FORCE_IPV4:
+    original_getaddrinfo = socket.getaddrinfo
+
+    def ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+        if host == "www.dges.gov.pt":
+            family = socket.AF_INET
+        return original_getaddrinfo(host, port, family, type, proto, flags)
+
+    socket.getaddrinfo = ipv4_getaddrinfo
 
 
 def fetch(url: str, cache_name: str) -> str:
